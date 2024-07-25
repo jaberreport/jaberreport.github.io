@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Task Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .completed {
+            background-color: #c6efce;
+        }
+        .not-completed {
+            background-color: #ffc7ce;
+        }
+        input[type="date"] {
+            width: 100%;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        @media (max-width: 600px) {
+            th, td {
+                padding: 12px;
+                font-size: 14px;
+            }
+            .button {
+                width: 100%;
+                padding: 15px;
+                font-size: 18px;
+            }
+        }
+    </style>
+    <script>
+        function sharePDF() {
+            const element = document.body;
+            html2pdf(element, {
+                margin: 1,
+                filename: 'daily_task_status.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            }).then(() => {
+                const pdfBlob = new Blob([element.innerHTML], { type: 'application/pdf' });
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Daily Task Status',
+                        text: 'Please find the attached daily task status PDF.',
+                        url: pdfUrl,
+                    }).then(() => {
+                        console.log('Successfully shared');
+                    }).catch((error) => {
+                        console.error('Something went wrong sharing the file', error);
+                    });
+                } else {
+                    alert('Your browser does not support the share feature.');
+                }
+            });
+        }
+
+        window.onload = function() {
+            document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        this.closest('td').classList.add('completed');
+                        this.closest('td').classList.remove('not-completed');
+                    } else {
+                        this.closest('td').classList.remove('completed');
+                        this.closest('td').classList.add('not-completed');
+                    }
+                });
+            });
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Daily Task Status - July 2024</h1>
+        
+        <h2>Marketing Daily Task Report</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Nama Tugas</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="date" name="task-date"></td>
+                    <td>Posting Facebook</td>
+                    <td class="not-completed"><input type="checkbox" class="task-checkbox"></td>
+                </tr>
+                <tr>
+                    <td><input type="date" name="task-date"></td>
+                    <td>Buat Artikel</td>
+                    <td class="not-completed"><input type="checkbox" class="task-checkbox"></td>
+                </tr>
+                <tr>
+                    <td><input type="date" name="task-date"></td>
+                    <td>Posting di TikTok</td>
+                    <td class="not-completed"><input type="checkbox" class="task-checkbox"></td>
+                </tr>
+                <!-- Tambahkan tugas lain sesuai kebutuhan -->
+            </tbody>
+        </table>
+
+        <button class="button" onclick="sharePDF()">Share PDF</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+</body>
+</html>
